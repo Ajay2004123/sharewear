@@ -45,12 +45,14 @@ const { startReminderChecker } = require('./routes/email');
 startReminderChecker();
 
 // ─── Start server ─────────────────────────────────────────────────────────────
+const PORT = process.env.PORT || 5000;
+
 app.listen(PORT, () => {
   console.log(`
   ╔══════════════════════════════════════════╗
   ║         CampusRent Server Running        ║
   ║                                          ║
-  ║   🌐 Open: http://localhost:${PORT}         ║
+  ║   🌐 Running on port: ${PORT}            ║
   ║   📁 Storage: JSON files in /data/       ║
   ║   ⏰ Reminder checker: ACTIVE            ║
   ╚══════════════════════════════════════════╝
