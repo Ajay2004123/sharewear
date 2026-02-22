@@ -13,5 +13,8 @@
     "nodemailer": "^6.9.7",
     "uuid": "^9.0.0",
     "express-session": "^1.17.3"
+  },
+  "engines": {
+    "node": "18.x"
   }
 }
