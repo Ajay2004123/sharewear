@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ShareWear — Borrow. Lend. Connect.</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #09090f;
+    --surface: #121219;
+    --card: #1a1a26;
+    --accent: #f0c040;
+    --accent2: #e0522b;
+    --green: #3dd68c;
+    --text: #f0ede8;
+    --muted: #7878a0;
+    --border: rgba(255,255,255,0.07);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .orb { position:fixed; border-radius:50%; filter:blur(90px); pointer-events:none; }
+  .orb1 { width:500px;height:500px;background:#f0c040;top:-180px;right:-100px;opacity:0.13;animation:drift 9s ease-in-out infinite alternate; }
+  .orb2 { width:400px;height:400px;background:#e0522b;bottom:-150px;left:-80px;opacity:0.12;animation:drift 11s ease-in-out infinite alternate-reverse; }
+  @keyframes drift { to { transform:translate(40px,30px); } }
+
+  .wrap {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    max-width:960px;
+    width:92%;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:24px;
+    overflow:hidden;
+    box-shadow:0 50px 120px rgba(0,0,0,0.6);
+    position:relative;
+    z-index:2;
+    animation:up 0.55s cubic-bezier(.22,1,.36,1) forwards;
+  }
+  @keyframes up { from{opacity:0;transform:translateY(32px)} to{opacity:1;transform:translateY(0)} }
+
+  .hero {
+    background:linear-gradient(145deg,#110f00 0%,#261800 60%,#180d00 100%);
+    padding:48px 40px;
+    display:flex;flex-direction:column;justify-content:space-between;
+    position:relative;overflow:hidden;
+  }
+  .hero::before { content:'';position:absolute;width:320px;height:320px;background:var(--accent);border-radius:50%;top:-120px;left:-100px;opacity:0.1;filter:blur(60px); }
+  .brand { font-family:'Syne',sans-serif;font-size:1.9rem;font-weight:800;color:var(--accent);letter-spacing:-1px; }
+  .brand span { color:var(--text); }
+  .tagline { font-size:0.82rem;color:var(--muted);margin-top:5px;letter-spacing:0.5px; }
+  .hero-h { font-family:'Syne',sans-serif;font-size:2.6rem;font-weight:800;line-height:1.1;margin-bottom:14px; }
+  .hero-h em { color:var(--accent);font-style:normal; }
+  .hero-p { color:var(--muted);font-size:0.9rem;line-height:1.65; }
+  .feats { display:flex;flex-direction:column;gap:10px; }
+  .feat { display:flex;align-items:center;gap:10px;font-size:0.86rem;color:var(--muted); }
+  .fi { width:30px;height:30px;background:rgba(240,192,64,0.12);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:0.9rem;flex-shrink:0; }
+
+  .auth { padding:48px 44px;display:flex;flex-direction:column;justify-content:center; }
+  .tabs { display:flex;gap:4px;background:var(--bg);border-radius:12px;padding:4px;margin-bottom:30px; }
+  .tab {
+    flex:1;padding:10px;border:none;background:transparent;color:var(--muted);
+    font-family:'DM Sans',sans-serif;font-size:0.88rem;cursor:pointer;border-radius:8px;transition:all 0.2s;
+  }
+  .tab.on { background:var(--accent);color:#000;font-weight:600; }
+  .ftitle { font-family:'Syne',sans-serif;font-size:1.55rem;font-weight:700;margin-bottom:4px; }
+  .fsub { color:var(--muted);font-size:0.84rem;margin-bottom:26px; }
+  .fg { margin-bottom:16px; }
+  label { display:block;font-size:0.76rem;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.6px; }
+  input {
+    width:100%;padding:12px 15px;
+    background:var(--bg);border:1px solid var(--border);
+    border-radius:10px;color:var(--text);
+    font-family:'DM Sans',sans-serif;font-size:0.93rem;outline:none;transition:border-color 0.2s;
+  }
+  input:focus { border-color:var(--accent); }
+  .err { color:#ff7070;font-size:0.8rem;margin-top:6px;display:none; }
+  .btn {
+    width:100%;padding:13px;background:var(--accent);color:#000;
+    border:none;border-radius:10px;font-family:'Syne',sans-serif;
+    font-size:0.98rem;font-weight:700;cursor:pointer;transition:transform 0.15s,opacity 0.15s;
+    margin-top:4px;
+  }
+  .btn:hover { opacity:0.88;transform:translateY(-1px); }
+  .btn:active { transform:translateY(0); }
+  .fs { display:none; }
+  .fs.on { display:block; }
+  .hint { text-align:center;margin-top:16px;font-size:0.8rem;color:var(--muted); }
+  .hint span { color:var(--accent);cursor:pointer; }
+
+  /* NEW CREATOR STYLE */
+  .creator {
+    margin-top: 30px;
+    text-align: center;
+    font-size: 0.75rem;
+    color: var(--muted);
+    letter-spacing: 0.5px;
+  }
+  .creator strong {
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  @media (max-width:640px) {
+    .wrap { grid-template-columns:1fr; }
+    .hero { display:none; }
+    .auth { padding:36px 28px; }
+  }
+</style>
+</head>
+<body>
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+
+<div class="wrap">
+  <div class="hero">
+    <div>
+      <div class="brand">Share<span>Wear</span></div>
+      <div class="tagline">The campus sharing economy</div>
+    </div>
+    <div>
+      <div class="hero-h">Rent. <em>Lend.</em> Save.</div>
+      <div class="hero-p">Borrow outfits, gadgets & more from fellow students. List what you own, earn money, reduce waste.</div>
+    </div>
+    <div class="feats">
+      <div class="feat"><div class="fi">👗</div> Clothes, electronics, accessories & more</div>
+      <div class="feat"><div class="fi">💬</div> Chat + voice messages with owners</div>
+      <div class="feat"><div class="fi">📧</div> Gmail reminder 16 hrs before return</div>
+      <div class="feat"><div class="fi">⚡</div> Auto fine calculation for late returns</div>
+    </div>
+  </div>
+
+  <div class="auth">
+    <div class="tabs">
+      <button class="tab on" id="t-login" onclick="switchTab('login')">Login</button>
+      <button class="tab" id="t-register" onclick="switchTab('register')">Register</button>
+    </div>
+
+    <div class="fs on" id="f-login">
+      <div class="ftitle">Welcome back</div>
+      <div class="fsub">Sign in to your ShareWear account</div>
+      <div class="fg"><label>Email</label><input type="email" id="l-email" placeholder="student@campus.edu"></div>
+      <div class="fg"><label>Password</label><input type="password" id="l-pass" placeholder="••••••••"></div>
+      <div class="err" id="l-err">Invalid email or password</div>
+      <button class="btn" onclick="doLogin()">Sign In →</button>
+      <div class="hint">No account? <span onclick="switchTab('register')">Register here</span></div>
+    </div>
+
+    <div class="fs" id="f-register">
+      <div class="ftitle">Create account</div>
+      <div class="fsub">Join thousands of students on campus</div>
+      <div class="fg"><label>Full Name</label><input type="text" id="r-name"></div>
+      <div class="fg"><label>Email</label><input type="email" id="r-email"></div>
+      <div class="fg"><label>Password</label><input type="password" id="r-pass"></div>
+      <div class="err" id="r-err">Please fill all fields correctly</div>
+      <button class="btn" onclick="doRegister()">Create Account →</button>
+      <div class="hint">Have an account? <span onclick="switchTab('login')">Login here</span></div>
+    </div>
+
+    <!-- CREATOR CREDIT -->
+    <div class="creator">
+      Created by <strong>Ajay Patel</strong>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function switchTab(t) {
+  document.getElementById('t-login').classList.toggle('on', t==='login');
+  document.getElementById('t-register').classList.toggle('on', t==='register');
+  document.getElementById('f-login').classList.toggle('on', t==='login');
+  document.getElementById('f-register').classList.toggle('on', t==='register');
+}
+</script>
+</body>
+</html>

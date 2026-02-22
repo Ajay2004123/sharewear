@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — ShareWear</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#09090f; --surface:#121219; --card:#17172200;
+  --C:#1c1c28; --accent:#f0c040; --accent2:#e0522b;
+  --green:#3dd68c; --red:#ff6b6b;
+  --text:#f0ede8; --muted:#7878a0; --border:rgba(255,255,255,0.07);
+  --sw:240px; --r:14px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;display:flex;min-height:100vh;}
+
+/* ── SIDEBAR ── */
+.sb{width:var(--sw);background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:100;}
+.sb-brand{padding:18px 14px 16px;border-bottom:1px solid var(--border);}
+.sb-logo{font-family:'Syne',sans-serif;font-size:1.15rem;font-weight:800;color:var(--accent);letter-spacing:-0.5px;white-space:nowrap;overflow:hidden;}
+.sb-logo span{color:var(--text);}
+.sb-sub{font-size:0.72rem;color:var(--muted);margin-top:2px;}
+.nav{padding:14px 10px;flex:1;overflow-y:auto;}
+.nl{font-size:0.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;padding:0 8px;margin:14px 0 6px;}
+.ni{display:flex;align-items:center;gap:9px;padding:10px 12px;border-radius:10px;color:var(--muted);font-size:0.87rem;cursor:pointer;transition:all 0.18s;margin-bottom:2px;text-decoration:none;border:none;background:none;width:100%;}
+.ni:hover{background:rgba(255,255,255,0.05);color:var(--text);}
+.ni.on{background:rgba(240,192,64,0.12);color:var(--accent);}
+.ni-ic{font-size:1rem;width:20px;text-align:center;flex-shrink:0;}
+.badge{margin-left:auto;background:var(--accent2);color:#fff;font-size:0.68rem;padding:2px 6px;border-radius:20px;min-width:18px;text-align:center;}
+.sb-user{padding:14px 18px;border-top:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+.av{width:34px;height:34px;background:rgba(240,192,64,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
+.un{flex:1;overflow:hidden;}
+.un-name{font-size:0.86rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.un-role{font-size:0.7rem;color:var(--muted);}
+.logout{background:none;border:none;color:var(--muted);cursor:pointer;font-size:1.1rem;padding:4px;transition:color 0.2s;}
+.logout:hover{color:var(--red);}
+
+/* ── MAIN ── */
+.main{margin-left:var(--sw);flex:1;padding:28px 30px;overflow-y:auto;min-height:100vh;}
+.topbar{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:26px;}
+.pt{font-family:'Syne',sans-serif;font-size:1.55rem;font-weight:700;}
+.ps{color:var(--muted);font-size:0.85rem;margin-top:3px;}
+
+/* ── CLOCK ── */
+.clock-wrap{background:linear-gradient(135deg,#160e00,#231500);border:1px solid rgba(240,192,64,0.18);border-radius:var(--r);padding:20px 28px;display:flex;align-items:center;gap:22px;margin-bottom:26px;}
+.clock-t{font-family:'Syne',sans-serif;font-size:2.8rem;font-weight:800;color:var(--accent);letter-spacing:2px;min-width:180px;}
+.clock-d .dt{font-size:1rem;font-weight:500;}
+.clock-d .dy{font-size:0.82rem;color:var(--muted);margin-top:2px;}
+.pulse{width:9px;height:9px;background:var(--green);border-radius:50%;margin-left:auto;animation:pu 2s infinite;}
+@keyframes pu{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.4;transform:scale(1.4)}}
+
+/* ── STATS ── */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:26px;}
+.sc{background:var(--C);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;}
+.sc-ic{font-size:1.5rem;margin-bottom:9px;}
+.sc-v{font-family:'Syne',sans-serif;font-size:1.75rem;font-weight:700;}
+.sc-l{font-size:0.78rem;color:var(--muted);margin-top:2px;}
+
+/* ── GRID ── */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:24px;}
+.card{background:var(--C);border:1px solid var(--border);border-radius:var(--r);padding:20px;}
+.ct{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;margin-bottom:16px;display:flex;align-items:center;gap:6px;}
+.va{margin-left:auto;font-size:0.78rem;color:var(--accent);cursor:pointer;text-decoration:none;}
+.va:hover{text-decoration:underline;}
+
+/* ── ITEMS GRID ── */
+.ig{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:26px;}
+.ic{background:var(--C);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;transition:transform 0.2s,box-shadow 0.2s;cursor:pointer;}
+.ic:hover{transform:translateY(-4px);box-shadow:0 14px 44px rgba(0,0,0,0.35);}
+.ic-img{width:100%;height:155px;background:#1a1a26;display:flex;align-items:center;justify-content:center;font-size:2.8rem;overflow:hidden;}
+.ic-img img{width:100%;height:100%;object-fit:cover;}
+.ic-body{padding:13px;}
+.ic-name{font-weight:600;font-size:0.93rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:3px;}
+.ic-own{font-size:0.76rem;color:var(--muted);}
+.ic-foot{display:flex;justify-content:space-between;align-items:center;margin-top:9px;}
+.ic-price{color:var(--accent);font-weight:700;font-size:0.88rem;}
+.ic-cat{background:rgba(255,255,255,0.06);font-size:0.7rem;padding:3px 8px;border-radius:20px;color:var(--muted);}
+.btn-rent{width:100%;margin-top:10px;padding:8px;background:var(--accent);color:#000;border:none;border-radius:8px;font-family:'Syne',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;transition:opacity 0.15s;}
+.btn-rent:hover{opacity:0.85;}
+.btn-del{width:100%;margin-top:10px;padding:8px;background:rgba(255,107,107,0.12);color:var(--red);border:1px solid rgba(255,107,107,0.2);border-radius:8px;font-size:0.8rem;cursor:pointer;transition:background 0.15s;}
+.btn-del:hover{background:rgba(255,107,107,0.22);}
+
+/* ── REQUEST ROW ── */
+.rr{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);}
+.rr:last-child{border-bottom:none;}
+.rr-ic{width:40px;height:40px;background:var(--surface);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;}
+.rr-info{flex:1;min-width:0;}
+.rr-name{font-size:0.87rem;font-weight:500;}
+.rr-meta{font-size:0.74rem;color:var(--muted);margin-top:2px;}
+.rr-acts{display:flex;gap:6px;margin-top:7px;}
+.rbtn{padding:5px 12px;border:none;border-radius:7px;font-size:0.76rem;cursor:pointer;font-weight:600;}
+.rbtn.acc{background:var(--green);color:#000;}
+.rbtn.rej{background:rgba(255,107,107,0.15);color:var(--red);border:1px solid rgba(255,107,107,0.3);}
+.rbtn.ret{background:var(--accent);color:#000;}
+.sb-pill{padding:4px 10px;border-radius:20px;font-size:0.7rem;font-weight:600;white-space:nowrap;flex-shrink:0;}
+.sp-pend{background:rgba(240,192,64,0.12);color:var(--accent);}
+.sp-appr{background:rgba(61,214,140,0.12);color:var(--green);}
+.sp-rej{background:rgba(255,107,107,0.12);color:var(--red);}
+.sp-ret{background:rgba(120,120,160,0.12);color:var(--muted);}
+
+/* ── SEARCH ── */
+.srow{display:flex;gap:10px;margin-bottom:22px;flex-wrap:wrap;}
+.si{flex:1;min-width:160px;padding:11px 15px;background:var(--C);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.9rem;outline:none;}
+.si:focus{border-color:var(--accent);}
+.fb{padding:9px 15px;background:var(--C);border:1px solid var(--border);border-radius:10px;color:var(--muted);cursor:pointer;font-size:0.85rem;transition:all 0.15s;}
+.fb.on{border-color:var(--accent);color:var(--accent);}
+
+/* ── CHAT ── */
+.chat-wrap{display:grid;grid-template-columns:270px 1fr;height:calc(100vh - 130px);background:var(--C);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;}
+.chat-sb{border-right:1px solid var(--border);display:flex;flex-direction:column;}
+.chat-sbh{padding:16px;border-bottom:1px solid var(--border);font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem;}
+.chat-contacts{overflow-y:auto;flex:1;}
+.cc{display:flex;align-items:center;gap:11px;padding:13px 16px;cursor:pointer;border-bottom:1px solid var(--border);transition:background 0.15s;}
+.cc:hover,.cc.on{background:rgba(255,255,255,0.04);}
+.cc-av{width:38px;height:38px;background:rgba(240,192,64,0.12);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;}
+.cc-n{font-weight:500;font-size:0.87rem;}
+.cc-l{font-size:0.73rem;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:155px;}
+.chat-main{display:flex;flex-direction:column;}
+.chat-hdr{padding:15px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;}
+.msgs{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:10px;}
+.msg{max-width:62%;}
+.msg.s{align-self:flex-end;}
+.msg.r{align-self:flex-start;}
+.msg-sys{align-self:center;max-width:80%;}
+.sys-bub{background:rgba(240,192,64,0.08);border:1px solid rgba(240,192,64,0.15);border-radius:10px;padding:8px 14px;font-size:0.78rem;color:var(--muted);text-align:center;}
+.bub{padding:10px 14px;border-radius:16px;font-size:0.87rem;line-height:1.5;}
+.s .bub{background:var(--accent);color:#000;border-bottom-right-radius:4px;}
+.r .bub{background:var(--surface);border:1px solid var(--border);border-bottom-left-radius:4px;}
+.mt{font-size:0.68rem;color:var(--muted);margin-top:3px;}
+.s .mt{text-align:right;}
+.msg-name{font-size:0.68rem;font-weight:600;margin-bottom:3px;opacity:0.7;}
+.msg-name-s{text-align:right;color:#000;}
+.msg-name-r{text-align:left;color:var(--muted);}
+.s .msg-name-s{color:rgba(0,0,0,0.55);}
+.voice-bub{display:flex;align-items:center;gap:8px;}
+.vp{width:30px;height:30px;background:rgba(0,0,0,0.2);border:none;border-radius:50%;cursor:pointer;color:inherit;font-size:0.75rem;display:flex;align-items:center;justify-content:center;}
+.vwave{flex:1;height:22px;background:rgba(0,0,0,0.12);border-radius:11px;display:flex;align-items:center;justify-content:center;gap:2px;}
+.vwave span{display:inline-block;width:2px;background:currentColor;opacity:0.6;border-radius:2px;animation:wave 1.2s ease-in-out infinite;}
+.vwave span:nth-child(2){animation-delay:0.1s;height:8px}
+.vwave span:nth-child(3){animation-delay:0.2s;height:14px}
+.vwave span:nth-child(4){animation-delay:0.3s;height:10px}
+.vwave span:nth-child(5){animation-delay:0.4s;height:16px}
+.vwave span:nth-child(6){animation-delay:0.2s;height:8px}
+.vwave span:nth-child(7){animation-delay:0.1s;height:12px}
+@keyframes wave{0%,100%{height:4px}50%{height:14px}}
+.vdur{font-size:0.7rem;white-space:nowrap;}
+.chat-in{padding:14px 16px;border-top:1px solid var(--border);}
+.chat-in-row{display:flex;gap:8px;align-items:center;}
+.mi{flex:1;padding:10px 15px;background:var(--bg);border:1px solid var(--border);border-radius:24px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.88rem;outline:none;}
+.mi:focus{border-color:var(--accent);}
+.mic{width:40px;height:40px;background:var(--surface);border:1px solid var(--border);border-radius:50%;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:all 0.15s;}
+.mic.rec{background:#cc2222;border-color:#cc2222;animation:rp 1s infinite;}
+@keyframes rp{0%,100%{box-shadow:0 0 0 0 rgba(204,34,34,0.4)}50%{box-shadow:0 0 0 8px rgba(204,34,34,0)}}
+.sbtn{width:40px;height:40px;background:var(--accent);border:none;border-radius:50%;cursor:pointer;font-size:0.9rem;display:flex;align-items:center;justify-content:center;color:#000;}
+.rec-hint{text-align:center;color:#cc4444;font-size:0.78rem;margin-top:7px;display:none;}
+.rec-hint.on{display:block;}
+
+/* ── NOTIFICATIONS ── */
+.ni-item{display:flex;gap:13px;padding:14px;background:var(--C);border-radius:12px;margin-bottom:10px;border:1px solid var(--border);}
+.ni-ic2{font-size:1.3rem;flex-shrink:0;}
+.ni-text{font-size:0.86rem;line-height:1.5;}
+.ni-time{font-size:0.72rem;color:var(--muted);margin-top:3px;}
+
+/* ── MODALS ── */
+.mo{position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:999;display:none;align-items:center;justify-content:center;backdrop-filter:blur(5px);}
+.mo.on{display:flex;}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:22px;width:90%;max-width:500px;padding:30px;max-height:92vh;overflow-y:auto;}
+.modal-t{font-family:'Syne',sans-serif;font-size:1.35rem;font-weight:700;margin-bottom:4px;}
+.modal-s{color:var(--muted);font-size:0.84rem;margin-bottom:22px;}
+.fg{margin-bottom:15px;}
+label{display:block;font-size:0.76rem;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px;}
+input[type=text],input[type=number],input[type=date],input[type=email],input[type=password],textarea,select{width:100%;padding:11px 14px;background:var(--bg);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.9rem;outline:none;transition:border-color 0.2s;}
+input:focus,textarea:focus,select:focus{border-color:var(--accent);}
+textarea{resize:vertical;min-height:75px;}
+select option{background:var(--bg);}
+.ma{display:flex;gap:10px;margin-top:20px;}
+.mbtn-s{flex:1;padding:11px;background:transparent;border:1px solid var(--border);border-radius:10px;color:var(--text);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:0.9rem;}
+.mbtn-p{flex:1;padding:11px;background:var(--accent);border:none;border-radius:10px;color:#000;font-family:'Syne',sans-serif;font-weight:700;cursor:pointer;font-size:0.9rem;}
+.upload-area{border:2px dashed var(--border);border-radius:12px;padding:28px;text-align:center;cursor:pointer;transition:border-color 0.2s;position:relative;}
+.upload-area:hover{border-color:var(--accent);}
+.upload-area input{position:absolute;inset:0;opacity:0;cursor:pointer;}
+.up-icon{font-size:1.8rem;margin-bottom:7px;}
+.up-p{color:var(--muted);font-size:0.84rem;}
+.prev{width:100%;border-radius:10px;margin-top:12px;max-height:170px;object-fit:cover;display:none;}
+.cost-box{background:rgba(240,192,64,0.07);border:1px solid rgba(240,192,64,0.18);border-radius:12px;padding:14px;margin-top:4px;}
+.cost-v{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:700;color:var(--accent);}
+.cost-s{font-size:0.76rem;color:var(--muted);margin-top:3px;}
+
+/* ── PAGE VIEWS ── */
+.pv{display:none;}
+.pv.on{display:block;}
+
+/* ── ADD ITEM BTN ── */
+.btn-add{padding:10px 20px;background:var(--accent);color:#000;border:none;border-radius:10px;font-family:'Syne',sans-serif;font-weight:700;cursor:pointer;font-size:0.88rem;}
+
+/* ── TOAST ── */
+#toast{position:fixed;bottom:24px;right:24px;background:var(--surface);border:1px solid var(--border);padding:12px 20px;border-radius:12px;z-index:9999;font-size:0.86rem;opacity:0;transition:opacity 0.3s;pointer-events:none;max-width:320px;}
+
+/* ── EMPTY STATE ── */
+.empty{text-align:center;padding:36px 20px;color:var(--muted);font-size:0.86rem;}
+.empty a{color:var(--accent);cursor:pointer;}
+
+@media(max-width:780px){
+  :root{--sw:56px}
+  .sb-brand .sb-sub,.un,.nav .ni span:not(.ni-ic){display:none}
+  .ni{justify-content:center}
+  .main{padding:20px 16px}
+  .stats{grid-template-columns:1fr 1fr}
+  .ig{grid-template-columns:1fr 1fr}
+  .g2{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sb">
+  <div class="sb-brand">
+    <div class="sb-logo">Share<span>Wear</span></div>
+    <div class="sb-sub">Campus Rental Platform</div>
+  </div>
+  <div class="nav">
+    <div class="nl">Menu</div>
+    <button class="ni on" data-page="home" onclick="nav('home')"><span class="ni-ic">🏠</span><span>Dashboard</span></button>
+    <button class="ni" data-page="browse" onclick="nav('browse')"><span class="ni-ic">🔍</span><span>Browse Items</span></button>
+    <button class="ni" data-page="my-items" onclick="nav('my-items')"><span class="ni-ic">📦</span><span>My Items</span></button>
+    <button class="ni" data-page="requests" onclick="nav('requests')"><span class="ni-ic">📋</span><span>Requests</span><span class="badge" id="req-badge" style="display:none">0</span></button>
+    <button class="ni" data-page="messages" onclick="nav('messages')"><span class="ni-ic">💬</span><span>Messages</span></button>
+    <button class="ni" data-page="notifications" onclick="nav('notifications')"><span class="ni-ic">🔔</span><span>Notifications</span></button>
+  </div>
+  <div class="sb-user">
+    <div class="av" id="sb-av">🎓</div>
+    <div class="un">
+      <div class="un-name" id="sb-name">Loading...</div>
+      <div class="un-role">Student Member</div>
+    </div>
+    <button class="logout" onclick="logout()" title="Logout">⏻</button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- HOME -->
+  <div class="pv on" id="pv-home">
+    <div class="topbar">
+      <div><div class="pt">Welcome, <span id="greet">Student</span> 👋</div><div class="ps">Here's what's happening on ShareWear</div></div>
+    </div>
+    <div class="clock-wrap">
+      <div class="clock-t" id="clk">00:00:00</div>
+      <div class="clock-d"><div class="dt" id="clk-date">--</div><div class="dy" id="clk-day">--</div></div>
+      <div class="pulse"></div>
+    </div>
+    <div class="stats">
+      <div class="sc"><div class="sc-ic">📦</div><div class="sc-v" id="st-listed">0</div><div class="sc-l">Items Listed</div></div>
+      <div class="sc"><div class="sc-ic">🤝</div><div class="sc-v" id="st-active">0</div><div class="sc-l">Active Rentals</div></div>
+      <div class="sc"><div class="sc-ic">💰</div><div class="sc-v" id="st-earned">₹0</div><div class="sc-l">Total Earned</div></div>
+      <div class="sc"><div class="sc-ic">📋</div><div class="sc-v" id="st-pending">0</div><div class="sc-l">Pending Requests</div></div>
+    </div>
+    <div class="g2">
+      <div class="card">
+        <div class="ct">📋 Recent Requests <a class="va" onclick="nav('requests')">View all</a></div>
+        <div id="home-reqs"><div class="empty">No requests yet</div></div>
+      </div>
+      <div class="card">
+        <div class="ct">📦 My Recent Items <a class="va" onclick="nav('my-items')">View all</a></div>
+        <div id="home-items"><div class="empty">No items yet. <a onclick="nav('my-items')">Add one!</a></div></div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+      <div class="ct" style="margin:0">🔥 Featured Items</div>
+      <a class="va" onclick="nav('browse')">Browse all →</a>
+    </div>
+    <div class="ig" id="home-featured"><div class="empty" style="grid-column:span 3">Loading...</div></div>
+  </div>
+
+  <!-- BROWSE -->
+  <div class="pv" id="pv-browse">
+    <div class="topbar"><div><div class="pt">Browse Items 🔍</div><div class="ps">Find what you need on campus</div></div></div>
+    <div class="srow">
+      <input class="si" id="s-q" placeholder="Search items..." oninput="filterBrowse()">
+      <button class="fb on" onclick="setCat('all',this)">All</button>
+      <button class="fb" onclick="setCat('Clothes',this)">👗 Clothes</button>
+      <button class="fb" onclick="setCat('Electronics',this)">📱 Electronics</button>
+      <button class="fb" onclick="setCat('Accessories',this)">👜 Accessories</button>
+      <button class="fb" onclick="setCat('Sports',this)">🏀 Sports</button>
+      <button class="fb" onclick="setCat('Other',this)">📦 Other</button>
+    </div>
+    <div class="ig" id="browse-grid"><div class="empty" style="grid-column:span 3">Loading...</div></div>
+  </div>
+
+  <!-- MY ITEMS -->
+  <div class="pv" id="pv-my-items">
+    <div class="topbar">
+      <div><div class="pt">My Items 📦</div><div class="ps">Manage your listed items</div></div>
+      <button class="btn-add" onclick="openModal('m-upload')">+ List New Item</button>
+    </div>
+    <div class="ig" id="my-items-grid"><div class="empty" style="grid-column:span 3">No items yet. Click "+ List New Item" to get started!</div></div>
+  </div>
+
+  <!-- REQUESTS -->
+  <div class="pv" id="pv-requests">
+    <div class="topbar"><div><div class="pt">Requests 📋</div><div class="ps">Manage incoming and outgoing rental requests</div></div></div>
+    <div class="g2">
+      <div class="card">
+        <div class="ct">📥 Incoming Requests</div>
+        <div id="inc-reqs"><div class="empty">No incoming requests</div></div>
+      </div>
+      <div class="card">
+        <div class="ct">📤 My Sent Requests</div>
+        <div id="out-reqs"><div class="empty">No sent requests</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MESSAGES -->
+  <div class="pv" id="pv-messages">
+    <div class="topbar" style="margin-bottom:16px"><div><div class="pt">Messages 💬</div><div class="ps">Chat with owners and borrowers</div></div></div>
+    <div class="chat-wrap">
+      <div class="chat-sb">
+        <div class="chat-sbh">Conversations</div>
+        <div class="chat-contacts" id="chat-contacts"><div class="empty">No conversations yet.<br>Approve a request to start chatting.</div></div>
+      </div>
+      <div class="chat-main">
+        <div class="chat-hdr">
+          <div class="cc-av" id="chat-av">💬</div>
+          <div><div style="font-weight:600;font-size:0.9rem;" id="chat-name">Select a conversation</div><div style="font-size:0.73rem;color:var(--muted)">ShareWear Chat</div></div>
+        </div>
+        <div class="msgs" id="msgs-area"><div class="empty" style="margin-top:60px">Select a conversation to start chatting</div></div>
+        <div class="chat-in">
+          <div class="chat-in-row">
+            <input class="mi" id="msg-in" placeholder="Type a message..." onkeydown="if(event.key==='Enter')sendMsg()">
+            <button class="mic" id="mic-btn" onclick="toggleMic()" title="Record voice message">🎤</button>
+            <button class="sbtn" onclick="sendMsg()">➤</button>
+          </div>
+          <div class="rec-hint" id="rec-hint">🔴 Recording... tap mic again to send</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NOTIFICATIONS -->
+  <div class="pv" id="pv-notifications">
+    <div class="topbar"><div><div class="pt">Notifications 🔔</div><div class="ps">Your recent activity</div></div></div>
+    <div id="notif-list"><div class="empty">No notifications yet</div></div>
+  </div>
+
+</main>
+
+<!-- UPLOAD MODAL -->
+<div class="mo" id="m-upload">
+  <div class="modal">
+    <div class="modal-t">List New Item 📦</div>
+    <div class="modal-s">Upload your item for others to rent</div>
+    <div class="fg">
+      <label>Item Photo</label>
+      <div class="upload-area" id="upload-area">
+        <div class="up-icon">📸</div>
+        <div class="up-p">Click to upload photo (optional)</div>
+        <input type="file" id="item-photo" accept="image/*" onchange="previewPhoto(event)">
+      </div>
+      <img class="prev" id="prev-img" alt="Preview">
+    </div>
+    <div class="fg"><label>Item Name *</label><input type="text" id="i-name" placeholder="e.g. Blue Blazer, Formal Shoes"></div>
+    <div class="fg"><label>Category</label>
+      <select id="i-cat">
+        <option>Clothes</option><option>Electronics</option><option>Accessories</option><option>Sports</option><option>Other</option>
+      </select>
+    </div>
+    <div class="fg"><label>Description</label><textarea id="i-desc" placeholder="Size, condition, what it's good for..."></textarea></div>
+    <div class="fg"><label>Rent Price per Day (₹) *</label><input type="number" id="i-price" placeholder="150" min="1"></div>
+    <div class="fg"><label>Late Return Fine per Day (₹)</label><input type="number" id="i-fine" placeholder="100" min="0"></div>
+    <div class="ma">
+      <button class="mbtn-s" onclick="closeModal('m-upload')">Cancel</button>
+      <button class="mbtn-p" onclick="listItem()">List Item 🚀</button>
+    </div>
+  </div>
+</div>
+
+<!-- RENT MODAL -->
+<div class="mo" id="m-rent">
+  <div class="modal">
+    <div class="modal-t">Request to Rent 🤝</div>
+    <div class="modal-s" id="rm-name">Item Name</div>
+    <div id="rm-info" style="background:var(--bg);border-radius:10px;padding:12px;margin-bottom:18px;font-size:0.84rem;color:var(--muted);"></div>
+    <div class="fg"><label>Start Date</label><input type="date" id="rm-start"></div>
+    <div class="fg"><label>End Date</label><input type="date" id="rm-end"></div>
+    <div class="fg"><label>Message to Owner</label><textarea id="rm-msg" placeholder="Tell them about the event you need this for..."></textarea></div>
+    <div class="cost-box">
+      <div style="font-size:0.78rem;color:var(--muted);margin-bottom:5px;">Estimated Cost</div>
+      <div class="cost-v" id="rm-cost">Select dates</div>
+      <div class="cost-s">Fine: ₹<span id="rm-fine">0</span>/day if returned late</div>
+    </div>
+    <div class="ma">
+      <button class="mbtn-s" onclick="closeModal('m-rent')">Cancel</button>
+      <button class="mbtn-p" onclick="sendRequest()">Send Request 📩</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+<script src="/js/app.js"></script>
+</body>
+</html>
